@@ -8,7 +8,7 @@ from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
 
 
-
+#test
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
     with open(nombre_archivo, 'r') as f:
