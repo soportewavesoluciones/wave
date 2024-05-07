@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración del Sensor - Wave</title>
+    <link rel="manifest" href="/wave/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="button"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="color: #000;">Wave</h1>
+        <h2 style="text-align: center; color: #000;">Configuración del Sensor</h2>
+        <form id="sensorForm">
+            <label for="ssid">SSID:</label>
+            <input type="text" id="ssid" name="ssid"><br><br>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password"><br><br>
+            <input type="submit" value="Enviar">
+        </form>
+        <input type="button" id="btnLeer" value="Leer">
+        <div id="mensajeDesdeESP32"></div>
+    </div>
+
+    <script>
+        document.getElementById("sensorForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var encoder = new TextEncoder();
+            var ssid = document.getElementById("ssid").value;
+            var password = document.getElementById("password").value;
+            var ssidArray = encoder.encode(ssid);
+            var passwordArray = encoder.encode(password);
+
+            var data = new Uint8Array(ssidArray.length + passwordArray.length + 1);
+            data.set(ssidArray, 0);
+            data.set([63], ssidArray.length); // Código ASCII para el signo de interrogación (?)
+            data.set(passwordArray, ssidArray.length + 1);
+
+            // Solicitar al usuario que seleccione un dispositivo BLE
+            navigator.bluetooth.requestDevice({
+                filters: [{ services: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] }]
+            })
+                .then(device => {
+                    console.log('Dispositivo seleccionado:', device.name);
+                    return device.gatt.connect();
+                })
+                .then(server => {
+                    return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+                })
+                .then(service => {
+                    return service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e");
+                })
+                .then(characteristic => {
+                    return characteristic.writeValue(data);
+                })
+                .then(() => {
+                    console.log("Datos de configuración de Wi-Fi enviados correctamente.");
+                })
+                .catch(error => {
+                    console.error("Error al enviar datos de configuración de Wi-Fi:", error);
+                });
+        });
+
+        document.getElementById("btnLeer").addEventListener("click", function() {
+            navigator.bluetooth.requestDevice({
+                filters: [{ services: ['6e400001-b5a3-f393-e0a9-e50e24dcca9e'] }]
+            })
+            .then(device => {
+                console.log('Dispositivo seleccionado:', device.name);
+                return device.gatt.connect();
+            })
+            .then(server => {
+                return server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+            })
+            .then(service => {
+                return service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
+            })
+            .then(characteristic => {
+                return characteristic.readValue();
+            })
+            .then(value => {
+                var decoder = new TextDecoder('utf-8');
+                var mensaje = decoder.decode(value);
+                document.getElementById("mensajeDesdeESP32").innerText = "Mensaje desde ESP32: " + mensaje;
+                console.log("Datos recibidos correctamente" + value);
+            })
+            .catch(error => {
+                console.error("Error al leer datos desde ESP32:", error);
+            });
+        });
+    </script>
+</body>
+</html>
