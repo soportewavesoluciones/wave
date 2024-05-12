@@ -10,5 +10,6 @@
     "retardo": 60000,
     "FIELDA": "levelh",
     "FIELDB": "levelp",
-    "FIELDC": "levelc"
+    "FIELDC": "levelc",
+    "FIELDD": "rawData"
   }
