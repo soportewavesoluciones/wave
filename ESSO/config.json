@@ -1,0 +1,14 @@
+{
+    "ssid": "Lote14",
+    "password": "junto263",
+    "device": "ESSO_TEST",
+    "heightSensor": "550",
+    "heightTank": "500",
+    "volumeTank": "3000",
+    "bucket": "BUCKET_1",
+    "measurement": "Level_status",
+    "retardo": 60000,
+    "FIELDA": "levelh",
+    "FIELDB": "levelp",
+    "FIELDC": "levelc"
+  }
