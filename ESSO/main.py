@@ -46,6 +46,7 @@ RETARDO = config['retardo']  # Intervalo de tiempo entre las lecturas
 FIELDA = config['FIELDA']  # Nombre del primer field
 FIELDB = config['FIELDB']  # Nombre del segundo field para el valor aleatorio
 FIELDC = config['FIELDC']  # Nombre del segundo field para el valor aleatorio
+FIELDD = config['FIELDD']
 
 # Conecta a la red Wi-Fi
 def connect_wifi(ssid, password):
@@ -77,10 +78,13 @@ def read_levelc():
     levelc = (((convert()/float(HEIGHTTANK))*float(VOLUMETANK)))
     return levelc
 
+def read_distance():
+    return lidar.distance()
+
 
 # Función para enviar datos a InfluxDB
-def send_to_influxdb(valueA, valueB, valueC):
-    data = "{},device={} {}={},{}={},{}={}".format(MEASUREMENT, DEVICE, FIELDA, valueA, FIELDB, valueB, FIELDC, valueC)
+def send_to_influxdb(valueA, valueB, valueC, valueD):
+    data = "{},device={} {}={},{}={},{}={},{}={}".format(MEASUREMENT, DEVICE, FIELDA, valueA, FIELDB, valueB, FIELDC, valueC, FIELDD, valueD)
     headers = {
         "Authorization": "Token {}".format(TOKEN),
         "Content-Type": "text/plain"
@@ -106,7 +110,8 @@ def enviar_datos(timer):
     levelh = read_levelh()
     levelp = read_levelp()
     levelc = read_levelc()
-    send_to_influxdb(levelh, levelp, levelc)
+    rawData = read_distance()
+    send_to_influxdb(levelh, levelp, levelc, rawData)
     timer.init(period=RETARDO, mode=machine.Timer.PERIODIC, callback=enviar_datos)
 
 # Iniciar el temporizador
