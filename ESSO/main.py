@@ -9,9 +9,11 @@ from ble_ConfigNetwork import demo
 import machine
 from machine import Pin 
 from machine import SoftI2C
-
 from lidar import LIDAR
 
+red = Pin(26, Pin.OUT)
+green = Pin(27, Pin.OUT)
+blue = Pin(14, Pin.OUT)
 
 # TF-Luna has the default slave_address 0x10
 LIDAR_ADDRESS = 0x10
@@ -59,6 +61,7 @@ def connect_wifi(ssid, password):
             pass
     print("Conexión Wi-Fi exitosa.")
     print("Dirección IP:", sta_if.ifconfig()[0])
+    green.value(1)
 
 def convert():
     hH2O=float(HEIGHTSENSOR)-lidar.distance()
