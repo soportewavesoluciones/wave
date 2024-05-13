@@ -26,6 +26,7 @@ influx = cargar_configuracion('influx.json')
 # Obtener los valores de la configuración
 SSID = config['ssid']
 PASSWORD = config['password']
+REPO_TOKEN = influx['repo_token']
 
 
 
@@ -69,7 +70,7 @@ def main():
 
 
     import senko
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="ESSO", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"], token=config['repo_token'])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="ESSO", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
 
     if OTA.update():
         print("Updated to the latest version! Rebooting...")
