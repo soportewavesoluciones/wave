@@ -1,0 +1,15 @@
+{
+    "ssid": "SMA_14000",
+    "password": "astroboi",
+    "device": "180Viviendas_TEST",
+    "heightSensor": "800",
+    "heightTank": "700",
+    "volumeTank": "300",
+    "bucket": "BUCKET_1",
+    "measurement": "Level_status",
+    "retardo": 60000,
+    "FIELDA": "levelh",
+    "FIELDB": "levelp",
+    "FIELDC": "levelc",
+    "FIELDD": "rawData"
+  }
