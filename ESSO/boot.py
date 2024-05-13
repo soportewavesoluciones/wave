@@ -8,6 +8,9 @@ import bluetooth
 from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
 import machine
+import rgb
+
+rgb.change_led_color("white")
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -66,7 +69,7 @@ def main():
 
 
     import senko
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="ESSO", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="ESSO", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"], token=config['repo_token'])
 
     if OTA.update():
         print("Updated to the latest version! Rebooting...")

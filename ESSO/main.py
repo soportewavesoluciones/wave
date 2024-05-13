@@ -2,7 +2,6 @@ import network
 import time
 import json
 import urequests as requests
-import random
 import bluetooth
 from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
@@ -10,17 +9,14 @@ import machine
 from machine import Pin 
 from machine import SoftI2C
 from lidar import LIDAR
-
-red = Pin(26, Pin.OUT)
-green = Pin(27, Pin.OUT)
-blue = Pin(14, Pin.OUT)
+import rgb
+import gc
+import os
 
 # TF-Luna has the default slave_address 0x10
 LIDAR_ADDRESS = 0x10
 i2c= SoftI2C(scl=Pin(22), sda=Pin(21), freq=115200, timeout=2500)
 lidar = LIDAR(i2c, LIDAR_ADDRESS)
-
-
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -61,7 +57,7 @@ def connect_wifi(ssid, password):
             pass
     print("Conexión Wi-Fi exitosa.")
     print("Dirección IP:", sta_if.ifconfig()[0])
-    green.value(1)
+    rgb.change_led_color("green")
 
 def convert():
     hH2O=float(HEIGHTSENSOR)-lidar.distance()
@@ -87,6 +83,7 @@ def read_distance():
 
 # Función para enviar datos a InfluxDB
 def send_to_influxdb(valueA, valueB, valueC, valueD):
+    
     data = "{},device={} {}={},{}={},{}={},{}={}".format(MEASUREMENT, DEVICE, FIELDA, valueA, FIELDB, valueB, FIELDC, valueC, FIELDD, valueD)
     headers = {
         "Authorization": "Token {}".format(TOKEN),
@@ -95,10 +92,13 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
     url = "{}/api/v2/write?org={}&bucket={}&precision=s".format(INFLUXDB_URL, ORG, BUCKET)
     response = requests.post(url, data=data, headers=headers)
     print("Solicitud POST completa:")
-    print("URL:", url)
-    print("Headers:", headers)
     print("Data:", data)
-    print("Respuesta del servidor:", response.text)
+    print("Respuesta del servidor:", response.status_code)
+    if response.status_code == 204: 
+        rgb.change_led_color("green")
+    else:
+        rgb.change_led_color("red")
+    gc.collect()
 
 
 #if __name__ == "__main__":
@@ -110,13 +110,18 @@ connect_wifi(SSID, PASSWORD)
 # Función a ejecutar después de cierto tiempo
 
 def enviar_datos(timer):
-    levelh = read_levelh()
-    levelp = read_levelp()
-    levelc = read_levelc()
-    rawData = read_distance()
-    send_to_influxdb(levelh, levelp, levelc, rawData)
-    timer.init(period=RETARDO, mode=machine.Timer.PERIODIC, callback=enviar_datos)
-
+    try:
+        rgb.change_led_color("blue")
+        levelh = read_levelh()
+        levelp = read_levelp()
+        levelc = read_levelc()
+        rawData = read_distance()
+        send_to_influxdb(levelh, levelp, levelc, rawData)
+        timer.init(period=RETARDO, mode=machine.Timer.PERIODIC, callback=enviar_datos)
+    except OSError as e:
+        if e.args[0] == 12:  # Comprueba si el código de error es ENOMEM
+            print("Error de memoria. Reiniciando ESP32...")
+            machine.reset()  # Reinicia el ESP32
 # Iniciar el temporizador
 timer = machine.Timer(-1)
 # Inicializar el temporizador para que se ejecute por primera vez después del retardo
