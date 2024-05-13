@@ -26,7 +26,6 @@ influx = cargar_configuracion('influx.json')
 # Obtener los valores de la configuración
 SSID = config['ssid']
 PASSWORD = config['password']
-REPO_TOKEN = influx['repo_token']
 
 
 
