@@ -1,9 +1,9 @@
 {
     "ssid": "ESSO",
     "password": "esso2022",
-    "device": "ESSO_TEST",
-    "heightSensor": "550",
-    "heightTank": "500",
+    "device": "ESSO_LASER",
+    "heightSensor": "460",
+    "heightTank": "320",
     "volumeTank": "3000",
     "bucket": "BUCKET_1",
     "measurement": "Level_status",
