@@ -3,7 +3,7 @@
     "password": "esso2022",
     "device": "ESSO_LASER",
     "heightSensor": "460",
-    "heightTank": "320",
+    "heightTank": "420",
     "volumeTank": "3000",
     "bucket": "BUCKET_1",
     "measurement": "Level_status",
