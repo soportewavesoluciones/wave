@@ -1,7 +1,7 @@
 {
     "ssid": "Tanque180",
     "password": "tanque2024",
-    "device": "180Viviendas_TEST",
+    "device": "180Viviendas",
     "heightSensor": "800",
     "heightTank": "700",
     "volumeTank": "300",
