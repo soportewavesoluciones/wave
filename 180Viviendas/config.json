@@ -2,7 +2,7 @@
     "ssid": "Tanque180",
     "password": "tanque2024",
     "device": "180Viviendas",
-    "heightSensor": "800",
+    "heightSensor": "780",
     "heightTank": "700",
     "volumeTank": "300",
     "bucket": "BUCKET_1",
