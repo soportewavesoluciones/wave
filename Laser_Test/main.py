@@ -127,6 +127,7 @@ def enviar_datos(timer):
             machine.reset()  # Reinicia el ESP32
         else: 
             print(e)
+            machine.reset()  # Reinicia el ESP32
 # Iniciar el temporizador
 timer = machine.Timer(-1)
 # Inicializar el temporizador para que se ejecute por primera vez después del retardo
