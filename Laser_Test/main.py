@@ -67,6 +67,7 @@ def convert():
 def read_levelh():
     print("getting...")
     print(lidar.distance())
+    print(lidar.signal_amp())
     return convert()
 
 # Función para generar un valor aleatorio entre 0 y 1
