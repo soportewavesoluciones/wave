@@ -122,6 +122,9 @@ def enviar_datos(timer):
         if e.args[0] == 12:  # Comprueba si el código de error es ENOMEM
             print("Error de memoria. Reiniciando ESP32...")
             machine.reset()  # Reinicia el ESP32
+        else: 
+            print(e)
+            machine.reset()  # Reinicia el ESP32
 # Iniciar el temporizador
 timer = machine.Timer(-1)
 # Inicializar el temporizador para que se ejecute por primera vez después del retardo
