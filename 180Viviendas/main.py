@@ -45,6 +45,7 @@ FIELDA = config['FIELDA']  # Nombre del primer field
 FIELDB = config['FIELDB']  # Nombre del segundo field para el valor aleatorio
 FIELDC = config['FIELDC']  # Nombre del segundo field para el valor aleatorio
 FIELDD = config['FIELDD']
+FIELDE = config['FIELDE']
 
 # Conecta a la red Wi-Fi
 def connect_wifi(ssid, password):
@@ -80,11 +81,14 @@ def read_levelc():
 def read_distance():
     return lidar.distance()
 
+def read_amp():
+    return lidar.signal_amp()
+
 
 # Función para enviar datos a InfluxDB
-def send_to_influxdb(valueA, valueB, valueC, valueD):
+def send_to_influxdb(valueA, valueB, valueC, valueD, valueE):
     
-    data = "{},device={} {}={},{}={},{}={},{}={}".format(MEASUREMENT, DEVICE, FIELDA, valueA, FIELDB, valueB, FIELDC, valueC, FIELDD, valueD)
+    data = "{},device={} {}={},{}={},{}={},{}={},{}={}".format(MEASUREMENT, DEVICE, FIELDA, valueA, FIELDB, valueB, FIELDC, valueC, FIELDD, valueD, FIELDE, valueE)
     headers = {
         "Authorization": "Token {}".format(TOKEN),
         "Content-Type": "text/plain"
@@ -117,7 +121,8 @@ def enviar_datos(timer):
         levelp = read_levelp()
         levelc = read_levelc()
         rawData = read_distance()
-        send_to_influxdb(levelh, levelp, levelc, rawData)
+        amp = read_amp()
+        send_to_influxdb(levelh, levelp, levelc, rawData, amp)
         timer.init(period=RETARDO, mode=machine.Timer.PERIODIC, callback=enviar_datos)
     except OSError as e:
         if e.args[0] == 12:  # Comprueba si el código de error es ENOMEM
