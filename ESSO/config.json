@@ -11,5 +11,6 @@
     "FIELDA": "levelh",
     "FIELDB": "levelp",
     "FIELDC": "levelc",
-    "FIELDD": "rawData"
+    "FIELDD": "rawData",
+    "FIELDE": "amp"
   }
