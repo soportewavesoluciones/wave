@@ -69,7 +69,7 @@ def main():
 
 
     import senko
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="Chapelco", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="chapelco", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
 
     if OTA.update():
         print("Updated to the latest version! Rebooting...")
