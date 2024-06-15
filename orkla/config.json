@@ -1,0 +1,15 @@
+{
+    "ssid": "Lote14",
+    "password": "junto263",
+    "device": "orkla",
+    "heightSensor": "340",
+    "heightTank": "300",
+    "volumeTank": "62",
+    "bucket": "BUCKET_1",
+    "measurement": "Level_status",
+    "retardo": 30000,
+    "FIELDA": "levelh",
+    "FIELDB": "levelp",
+    "FIELDC": "levelc",
+    "FIELDD": "rawData"
+  }
