@@ -8,6 +8,9 @@ import bluetooth
 from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
 import machine
+import rgb
+
+rgb.change_led_color("white")
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -18,22 +21,12 @@ def cargar_configuracion(nombre_archivo):
 # Obtener los valores de la configuración
 config = cargar_configuracion('config.json')
 
+influx = cargar_configuracion('influx.json')
+
 # Obtener los valores de la configuración
 SSID = config['ssid']
 PASSWORD = config['password']
-DEVICE = config['device']
-HEIGHTSENSOR = config['heightSensor']
-HEIGHTTANK = config['heightTank']
-VOLUMETANK = config['volumeTank']
-BUCKET = config['bucket']
-TOKEN = config['token']
-ORG = config['org']
-INFLUXDB_URL = config['influxdb_url']
-MEASUREMENT = config['measurement']
-RETARDO = config['retardo']  # Intervalo de tiempo entre las lecturas
-FIELDA = config['FIELDA']  # Nombre del primer field
-FIELDB = config['FIELDB']  # Nombre del segundo field para el valor aleatorio
-FIELDC = config['FIELDC']  # Nombre del segundo field para el valor aleatorio
+
 
 
 def connect_wlan(ssid, password):
@@ -71,11 +64,12 @@ def main():
 
     # Wi-Fi credentials
     print("Desde BOOT")
+    
     connect_wlan(SSID, PASSWORD)
 
 
     import senko
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="Viena_III", files=["main.py","boot.py","ble_ConfigNetwork.py"])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="Viena_III", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
 
     if OTA.update():
         print("Updated to the latest version! Rebooting...")

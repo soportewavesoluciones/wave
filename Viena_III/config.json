@@ -1,0 +1,15 @@
+{
+    "ssid": "cotemax_a43",
+    "password": "cote6f9f",
+    "device": "Viena_III",
+    "heightSensor": "250",
+    "heightTank": "220",
+    "volumeTank": "300",
+    "bucket": "BUCKET_1",
+    "measurement": "Level_status",
+    "retardo": 30000,
+    "FIELDA": "levelh",
+    "FIELDB": "levelp",
+    "FIELDC": "levelc",
+    "FIELDD": "rawData"
+  }
