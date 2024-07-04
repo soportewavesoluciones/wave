@@ -1,0 +1,15 @@
+{
+    "ssid": "sma_16370",
+    "password": "astroboi",
+    "device": "orkla",
+    "heightSensor": "340",
+    "heightTank": "320",
+    "volumeTank": "60",
+    "bucket": "BUCKET_1",
+    "measurement": "Level_status",
+    "retardo": 30000,
+    "FIELDA": "levelh",
+    "FIELDB": "levelp",
+    "FIELDC": "levelc",
+    "FIELDD": "rawData"
+  }
