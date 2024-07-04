@@ -48,7 +48,8 @@ def connect_wlan(ssid, password):
         sta_if.connect(ssid, password)
         while not sta_if.isconnected():
             pass
-
+        print("Connected!")
+        rgb.change_led_color("green")
     return True
 
 
