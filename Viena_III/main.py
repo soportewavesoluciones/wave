@@ -47,63 +47,76 @@ FIELDB = config['FIELDB']  # Nombre del segundo field para el valor aleatorio
 FIELDC = config['FIELDC']  # Nombre del segundo field para el valor aleatorio
 FIELDD = config['FIELDD']
 
+
 # Conecta a la red Wi-Fi
-def connect_wifi(ssid, password):
+def connect_wifi(ssid, password, max_retries=10):
     sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print("Conectando a la red Wi-Fi...")
-        sta_if.active(True)
+    if sta_if.isconnected():
+        print("Ya conectado a la red Wi-Fi.")
+        print("Dirección IP:", sta_if.ifconfig()[0])
+        rgb.change_led_color("green")
+        return True
+    
+    print("Conectando a la red Wi-Fi...")
+    rgb.change_led_color("white")
+    sta_if.active(True)
+    
+    retry_count = 0
+    while not sta_if.isconnected() and retry_count < max_retries:
+        if sta_if.status() == network.STAT_CONNECTING:
+            print("Wi-Fi está conectando, esperando...")
+            time.sleep(5)
+            continue
+        
+        sta_if.disconnect()
         sta_if.connect(ssid, password)
-        while not sta_if.isconnected():
-            pass
-    print("Conexión Wi-Fi exitosa.")
-    print("Dirección IP:", sta_if.ifconfig()[0])
-    rgb.change_led_color("green")
+        
+        print("Intento de conexión #{}...".format(retry_count + 1))
+        time.sleep(5)  # Esperar 5 segundos antes de intentar reconectar
+        retry_count += 1
+    
+    if not sta_if.isconnected():
+        print("No se pudo conectar a la red Wi-Fi después de {} intentos.".format(max_retries))
+        rgb.change_led_color("red")
+        return False
+    else:
+        print("Conexión Wi-Fi exitosa.")
+        print("Dirección IP:", sta_if.ifconfig()[0])
+        rgb.change_led_color("green")
+        return True
 
-def convert():
+def medir():
     import utime
-    trigger.value(1)
-    utime.sleep(2)
-    #Set the trigger high for 15 microseconds
-    trigger.value(0)
-    utime.sleep_us(15)
-    trigger.value(1)
-    #Set a timer to monitor the echo pin for a couple of seconds
-    pulse = machine.time_pulse_us(echo,1)
-    #Calculate the distance to the surface based on the speed of sound.
-    distance = (pulse/1000000)*34000/2
-    hH2O=float(HEIGHTSENSOR)-distance
-    return hH2O
+    total = 0
 
-# Función para leer la altura del agua
-def read_levelh():
-    return convert()
+    for i in range(21):
+        trigger.value(1)
+        utime.sleep_ms(50)
+        #Set the trigger high for 15 microseconds
+        trigger.value(0)
+        utime.sleep_us(10)
+        trigger.value(1)
+        #Set a timer to monitor the echo pin for a couple of seconds
+        pulse = machine.time_pulse_us(echo,1)
+        #Calculate the distance to the surface based on the speed of sound.
+        distance = (pulse/1000000)*34000/2
+        if distance > 500 or distance < 25:
+            distance = 0
+        total = total + distance
+    
+    MEDICION = total/20
 
-# Función para generar un valor aleatorio entre 0 y 1
-def read_levelp():
-    levelp = ((convert()*100/float(HEIGHTTANK))) 
-    return levelp
+    levelh = float(HEIGHTSENSOR)-(MEDICION)  
+    levelc = (((levelh/float(HEIGHTTANK))*float(VOLUMETANK)))
+    levelp = ((levelh*100/float(HEIGHTTANK))) 
 
-# Función para leer el estado de la entrada digital
-def read_levelc():
-    levelc = (((convert()/float(HEIGHTTANK))*float(VOLUMETANK)))
-    return levelc
-
-def read_distance():
-    import utime
-    trigger.value(1)
-    utime.sleep(2)
-    #Set the trigger high for 15 microseconds
-    trigger.value(0)
-    utime.sleep_us(15)
-    trigger.value(1)
-    #Set a timer to monitor the echo pin for a couple of seconds
-    pulse = machine.time_pulse_us(echo,1)
-    #Calculate the distance to the surface based on the speed of sound.
-    distance = (pulse/1000000)*34000/2
-    return distance
-
-
+    return {
+        "levelh": levelh,
+        "levelc": levelc,
+        "levelp": levelp,
+        "medicion": MEDICION
+    }
+    
 # Función para enviar datos a InfluxDB
 def send_to_influxdb(valueA, valueB, valueC, valueD):
     
@@ -124,28 +137,33 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
         rgb.change_led_color("red")
     gc.collect()
 
-
-#if __name__ == "__main__":
-#    demo()
-
-# Conectar a la red Wi-Fi
-connect_wifi(SSID, PASSWORD)
-
 # Función a ejecutar después de cierto tiempo
 
 def enviar_datos(timer):
     try:
+        sta_if = network.WLAN(network.STA_IF)
+        if not sta_if.isconnected():
+            print("Wi-Fi desconectado. Intentando reconectar...")
+            sta_if.active(False)
+            time.sleep(2)
+            if not connect_wifi(SSID, PASSWORD):
+                print("No se pudo reconectar. Reiniciando...")
+                machine.reset()
         rgb.change_led_color("blue")
-        levelh = read_levelh()
-        levelp = read_levelp()
-        levelc = read_levelc()
-        rawData = read_distance()
+        valores = medir()
+        levelh = valores["levelh"]
+        levelp = valores["levelp"]
+        levelc = valores["levelc"]
+        rawData = valores["medicion"]
         send_to_influxdb(levelh, levelp, levelc, rawData)
         timer.init(period=RETARDO, mode=machine.Timer.PERIODIC, callback=enviar_datos)
     except OSError as e:
         if e.args[0] == 12:  # Comprueba si el código de error es ENOMEM
             print("Error de memoria. Reiniciando ESP32...")
             machine.reset()  # Reinicia el ESP32
+        else:
+            print(e)
+            machine.reset()
 # Iniciar el temporizador
 timer = machine.Timer(-1)
 # Inicializar el temporizador para que se ejecute por primera vez después del retardo
