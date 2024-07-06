@@ -72,9 +72,12 @@ def main():
     import senko
     OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="Viena_III", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
 
-    if OTA.update():
+    try:
+        if OTA.update():
         print("Updated to the latest version! Rebooting...")
         machine.reset()
+    except Exception as e:
+        print("An error occurred during the OTA update:", e)
 
 
 if __name__ == "__main__":
