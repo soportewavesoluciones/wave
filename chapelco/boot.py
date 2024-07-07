@@ -74,8 +74,8 @@ def main():
 
     try:
         if OTA.update():
-        print("Updated to the latest version! Rebooting...")
-        machine.reset()
+            print("Updated to the latest version! Rebooting...")
+            machine.reset()
     except Exception as e:
         print("An error occurred during the OTA update:", e)
 
