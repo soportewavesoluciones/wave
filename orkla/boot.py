@@ -70,7 +70,7 @@ def main():
 
 
     import senko
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="orkla", files=[])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="orkla", files=["main.py","boot.py","ble_ConfigNetwork.py","config.json"])
 
     try:
         if OTA.update():
