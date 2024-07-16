@@ -3,7 +3,6 @@ import network
 import time
 import json
 import urequests as requests
-import random
 import bluetooth
 from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
