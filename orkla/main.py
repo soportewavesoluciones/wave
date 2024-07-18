@@ -118,7 +118,7 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
         "Content-Type": "text/plain"
     }
     url = "{}/api/v2/write?org={}&bucket={}&precision=s".format(INFLUXDB_URL, ORG, BUCKET)
-    
+    response = None
     try:
         response = requests.post(url, data=data, headers=headers)
         print("Solicitud POST completa:")
@@ -133,7 +133,8 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
         print("Error al enviar datos a InfluxDB:", e)
         rgb.change_led_color("red")
     finally:
-        response.close()  # Cerrar la respuesta para liberar memoria
+        if response is not None:
+            response.close()  # Cerrar la respuesta para liberar memoria
         gc.collect()
 
 # Función a ejecutar después de cierto tiempo
