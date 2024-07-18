@@ -133,8 +133,8 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
         print("Error al enviar datos a InfluxDB:", e)
         rgb.change_led_color("red")
     finally:
-        if response:
-            response.close()
+        if response is not None:
+            response.close()  # Cerrar la respuesta para liberar memoria
         gc.collect()
 
 # Función a ejecutar después de cierto tiempo
