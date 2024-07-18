@@ -83,6 +83,7 @@ def main():
         print("An error occurred during the OTA update:", e)
     finally:
         # Stop LED blinking and set it to a stable color after OTA update check
+        print("OTA finally")
         rgb.change_led_color("green")
 
 if __name__ == "__main__":
