@@ -8,8 +8,12 @@ from ble_ConfigNetwork import BLESimplePeripheral, demo
 import machine
 import rgb
 import senko
+import _thread
 
 rgb.change_led_color("white")
+
+# Variable global para controlar el parpadeo del LED
+blinking = True
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -49,14 +53,18 @@ def connect_wlan(ssid, password):
 
 def led_blink():
     """Makes the LED blink to indicate OTA update process."""
-    while True:
+    global blinking
+    while blinking:
         rgb.change_led_color("blue")
         time.sleep(0.5)
         rgb.change_led_color("")
         time.sleep(0.5)
+    rgb.change_led_color("green")  # Set the LED to green after stopping the blink
 
 def main():
     """Main function. Runs after board boot, before main.py."""
+    global blinking
+
     gc.collect()
     gc.enable()
 
@@ -73,7 +81,6 @@ def main():
     try:
         print("Checking for OTA update...")
         # Start LED blinking in a separate thread
-        import _thread
         _thread.start_new_thread(led_blink, ())
         
         if OTA.update():
@@ -83,6 +90,9 @@ def main():
         print("An error occurred during the OTA update:", e)
     finally:
         # Stop LED blinking and set it to a stable color after OTA update check
+        print("OTA finally")
+        blinking = False
+        time.sleep(1)  # Give some time for the led_blink thread to stop
         rgb.change_led_color("green")
 
 if __name__ == "__main__":
