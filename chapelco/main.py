@@ -118,7 +118,7 @@ def send_to_influxdb(valueA, valueB, valueC, valueD):
         "Content-Type": "text/plain"
     }
     url = "{}/api/v2/write?org={}&bucket={}&precision=s".format(INFLUXDB_URL, ORG, BUCKET)
-    
+    response = None
     try:
         response = requests.post(url, data=data, headers=headers)
         print("Solicitud POST completa:")
@@ -168,3 +168,4 @@ def enviar_datos(timer):
 timer = machine.Timer(-1)
 # Inicializar el temporizador para que se ejecute por primera vez después del retardo
 timer.init(period=RETARDO, mode=machine.Timer.ONE_SHOT, callback=enviar_datos)
+
