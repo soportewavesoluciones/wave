@@ -9,12 +9,11 @@ import machine
 import rgb
 import senko
 import _thread
-import threading
 
 rgb.change_led_color("white")
 
-# Evento para controlar el parpadeo del LED
-stop_blinking_event = threading.Event()
+# Variable global para controlar el parpadeo del LED
+blinking = True
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -52,9 +51,10 @@ def connect_wlan(ssid, password):
         rgb.change_led_color("green")
     return True
 
-def led_blink(stop_event):
+def led_blink():
     """Makes the LED blink to indicate OTA update process."""
-    while not stop_event.is_set():
+    global blinking
+    while blinking:
         rgb.change_led_color("blue")
         time.sleep(0.5)
         rgb.change_led_color("")
@@ -63,6 +63,8 @@ def led_blink(stop_event):
 
 def main():
     """Main function. Runs after board boot, before main.py."""
+    global blinking
+
     gc.collect()
     gc.enable()
 
@@ -79,8 +81,7 @@ def main():
     try:
         print("Checking for OTA update...")
         # Start LED blinking in a separate thread
-        blink_thread = threading.Thread(target=led_blink, args=(stop_blinking_event,))
-        blink_thread.start()
+        _thread.start_new_thread(led_blink, ())
         
         if OTA.update():
             print("Updated to the latest version! Rebooting...")
@@ -90,8 +91,8 @@ def main():
     finally:
         # Stop LED blinking and set it to a stable color after OTA update check
         print("OTA finally")
-        stop_blinking_event.set()
-        blink_thread.join()  # Wait for the blink_thread to finish
+        blinking = False
+        time.sleep(1)  # Give some time for the led_blink thread to stop
         rgb.change_led_color("green")
 
 if __name__ == "__main__":
