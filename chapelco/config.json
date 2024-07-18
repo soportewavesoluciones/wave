@@ -1,8 +1,8 @@
 {
-    "ssid": "Lote14",
-    "password": "junto263",
+    "ssid": "sma_16370",
+    "password": "astroboi",
     "device": "Chapelco",
-    "heightSensor": "570",
+    "heightSensor": "560",
     "heightTank": "520",
     "volumeTank": "360",
     "bucket": "BUCKET_1",
