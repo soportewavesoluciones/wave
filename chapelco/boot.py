@@ -39,7 +39,7 @@ def connect_wlan(ssid, password):
         print("Connecting to WLAN ({})...".format(ssid))
         sta_if.connect(ssid, password)
         retry_count = 0
-        while not sta_if.isconnected() and retry_count < 10:
+        while not sta_if.isconnected() and retry_count < 20:
             time.sleep(1)
             retry_count += 1
             print("Retrying connection to WLAN... ({})".format(retry_count))
