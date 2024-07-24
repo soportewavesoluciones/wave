@@ -86,29 +86,19 @@ def medir():
     total = 0
 
     for i in range(21):
-         # Asegura que el TRIG esté bajo inicialmente
-        trigger.value(0)
-        utime.sleep_us(2)
-        
-        # Envía un pulso de 10 microsegundos
         trigger.value(1)
-        utime.sleep_us(10)
+        utime.sleep_ms(50)
         trigger.value(0)
-        
-        # Mide la duración del pulso en el pin ECHO
-        pulse = machine.time_pulse_us(echo, 1, 30000)
-        
-        # Calcula la distancia (en cm)
+        utime.sleep_us(10)
+        trigger.value(1)
+        pulse = machine.time_pulse_us(echo, 1)
         distance = (pulse / 1000000) * 34000 / 2
-        
-        # Si la distancia está fuera del rango, la establece en 0
-        if distance > 450 or distance < 25:
+        if distance > 500 or distance < 25:
             distance = 0
-
         total += distance
     
     MEDICION = total / 20
-
+    
     levelh = float(HEIGHTSENSOR) - MEDICION  
     levelc = ((levelh / float(HEIGHTTANK)) * float(VOLUMETANK))
     levelp = ((levelh * 100 / float(HEIGHTTANK)))
