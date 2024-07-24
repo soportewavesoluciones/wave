@@ -92,7 +92,7 @@ def medir():
         utime.sleep_us(10)
         trigger.value(1)
         pulse = machine.time_pulse_us(echo, 1)
-        distance = (pulse / 1000000) * 34000 / 2
+        distance = (pulse / 1000000) * 34300 / 2
         if distance > 500 or distance < 25:
             distance = 0
         total += distance
