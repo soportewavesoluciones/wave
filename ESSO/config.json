@@ -1,0 +1,15 @@
+{
+  "ssid": "ESSO",
+  "password": "esso2022",
+  "device": "ESSO_LASER",
+  "heightSensor": "460",
+  "heightTank": "420",
+  "volumeTank": "3000",
+  "bucket": "BUCKET_1",
+  "measurement": "Level_status",
+  "retardo": 30000,
+  "FIELDA": "levelh",
+  "FIELDB": "levelp",
+  "FIELDC": "levelc",
+  "FIELDD": "rawData"
+}
