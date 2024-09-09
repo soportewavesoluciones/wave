@@ -1,7 +1,7 @@
 {
   "ssid": "ESSO",
   "password": "esso2022",
-  "device": "ESSO_LASER",
+  "device": "ESSO_NUEVO",
   "heightSensor": "460",
   "heightTank": "420",
   "volumeTank": "3000",
