@@ -76,7 +76,7 @@ def main():
         print("Failed to connect to Wi-Fi. Rebooting...")
         machine.reset()
 
-    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="esso", files=[])
+    OTA = senko.Senko(user="soportewavesoluciones", repo="wave", working_dir="ESSO", files=["main.py", "boot.py", "config.json"])
 
     try:
         print("Checking for OTA update...")
