@@ -6,17 +6,18 @@ import bluetooth
 from ble_ConfigNetwork import BLESimplePeripheral
 from ble_ConfigNetwork import demo
 import machine
-from machine import Pin 
+from machine import Pin
+from machine import I2C 
 import rgb
 import gc
 import os
 import utime  # Importa utime una vez al principio
 
-# Nominate a trigger pin on ESP8266 and declare it as an output pin
-trigger = machine.Pin(5, machine.Pin.OUT)
+# Configurar I2C en el ESP32 (puedes ajustar los pines si es necesario)
+i2c = I2C(1, scl=Pin(22), sda=Pin(21), freq=115200)
 
-# Nominate an echo pin and declare it as an input pin
-echo = machine.Pin(18, machine.Pin.IN)
+SensorAddress = 0x70  # Dirección I2C del sensor
+RangeCommand = 0x51   # Comando para iniciar la medición
 
 # Función para cargar la configuración desde un archivo JSON
 def cargar_configuracion(nombre_archivo):
@@ -82,23 +83,45 @@ def connect_wifi(ssid, password, max_retries=10):
         rgb.change_led_color("green")
         return True
 
+def take_range_reading():
+    """Enviar comando al sensor para tomar una medición de rango."""
+    i2c.writeto(SensorAddress, bytearray([RangeCommand]))
+
+def request_range():
+    """Solicitar la última medición de rango del sensor."""
+    data = i2c.readfrom(SensorAddress, 2)  # Leer 2 bytes de datos del sensor
+    if len(data) == 2:  # Si se reciben 2 bytes de datos
+        high_byte = data[0]
+        low_byte = data[1]
+        range_cm = (high_byte << 8) + low_byte  # Combinar los dos bytes en un valor de 16 bits
+        return range_cm
+    else:
+        return 0  # Si no se reciben datos, retornar 0
+
 def medir():
     total = 0
+    valid_readings = 0
+    for i in range(20):
 
-    for i in range(21):
-        trigger.value(1)
+        take_range_reading()  # Ordenar al sensor tomar una medición
+        time.sleep(0.3)  # Esperar a que el sensor termine la medición
+        range_cm = request_range()  # Obtener el rango medido del sensor
+        distance = range_cm
+        print(f"Lectura: {range_cm} cm")
+        if distance < 600 and distance > 20:
+            valid_readings +=1
+            total += distance
+        else:
+            print(f"Lectura inválida: {range_cm} cm")
+
         utime.sleep_ms(50)
-        trigger.value(0)
-        utime.sleep_us(10)
-        trigger.value(1)
-        pulse = machine.time_pulse_us(echo, 1)
-        distance = (pulse / 1000000) * 34300 / 2
-        if distance > 500 or distance < 25:
-            distance = 0
-        total += distance
     
-    MEDICION = total / 20
-    
+    if valid_readings == 0:
+        print("No se obtuvieron lecturas válidas.")
+        MEDICION = 0
+    else:  
+        MEDICION = total / valid_readings
+
     levelh = float(HEIGHTSENSOR) - MEDICION  
     levelc = ((levelh / float(HEIGHTTANK)) * float(VOLUMETANK))
     levelp = ((levelh * 100 / float(HEIGHTTANK)))
