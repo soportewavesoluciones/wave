@@ -2,7 +2,7 @@
     "ssid": "cotemax_a43",
     "password": "cote6f9f",
     "device": "Viena_III",
-    "heightSensor": "250",
+    "heightSensor": "240",
     "heightTank": "220",
     "volumeTank": "300",
     "bucket": "BUCKET_1",
