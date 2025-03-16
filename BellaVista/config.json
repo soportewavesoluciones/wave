@@ -1,0 +1,15 @@
+{
+  "ssid": "cotemax_b82",
+  "password": "cote93d0",
+  "device": "Bellavista_new",
+  "heightSensor": "510",
+  "heightTank": "480",
+  "volumeTank": "325",
+  "bucket": "BUCKET_1",
+  "measurement": "Level_status",
+  "retardo": 30000,
+  "FIELDA": "levelh",
+  "FIELDB": "levelp",
+  "FIELDC": "levelc",
+  "FIELDD": "rawData"
+}
