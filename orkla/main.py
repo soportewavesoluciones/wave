@@ -82,26 +82,37 @@ def connect_wifi(ssid, password, max_retries=10):
         rgb.change_led_color("green")
         return True
 
+# Función para medir distancia
 def medir():
     total = 0
+    valid_measurements = 0
 
-    for i in range(21):
+    for i in range(20):
+        # Envía un pulso de 10 microsegundos al trigger
         trigger.value(1)
-        utime.sleep_ms(50)
-        trigger.value(0)
         utime.sleep_us(10)
-        trigger.value(1)
-        pulse = machine.time_pulse_us(echo, 1)
-        distance = (pulse / 1000000) * 34000 / 2
-        if distance > 500 or distance < 25:
-            distance = 0
-        total += distance
-    
-    MEDICION = total / 20
+        trigger.value(0)
 
-    levelh = float(HEIGHTSENSOR) - MEDICION  
-    levelc = ((levelh / float(HEIGHTTANK)) * float(VOLUMETANK))
-    levelp = ((levelh * 100 / float(HEIGHTTANK)))
+        # Mide el tiempo del pulso de eco
+        pulse = machine.time_pulse_us(echo, 1, 30000)  # 30 ms timeout
+
+        if pulse > 0:
+            # Calcula la distancia en cm
+            distance = (pulse / 1000000) * 34000 / 2
+            if 25 <= distance <= 450:
+                total += distance
+                valid_measurements += 1
+
+    # Evita dividir por cero
+    if valid_measurements == 0:
+        MEDICION = 0
+    else:
+        MEDICION = total / valid_measurements
+
+    # Calcula niveles
+    levelh = float(HEIGHTSENSOR) - MEDICION
+    levelc = (levelh / float(HEIGHTTANK)) * float(VOLUMETANK)
+    levelp = (levelh * 100) / float(HEIGHTTANK)
 
     return {
         "levelh": levelh,
